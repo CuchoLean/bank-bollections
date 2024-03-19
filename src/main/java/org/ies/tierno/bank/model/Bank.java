@@ -70,19 +70,31 @@ public class Bank {
         System.out.println(toString());
     }
 
-    public Account ingresar(String iban, double amount) {
-        for (Account account : accountsByIban.values()) {
-            if (account.getIban().equals(iban)) {
-                account.setBalance(account.getBalance() + amount);
-            }
+    public Account findAccountByIban(String iban) {
+        if (accountsByIban.containsKey(iban)) {
+            return accountsByIban.get(iban);
+        } else {
+            return null;
         }
-        return null;
     }
 
+    public Account ingresar(String iban, double amount) {
+        Account account = findAccountByIban(iban);
+        if (account != null) {
+            account.setBalance(account.getBalance() + amount);
+            return account;
+        } else {
+            return null;
+        }
+    }
+
+
     public Account retirar(String iban, double amount) {
-        for (Account account : accountsByIban.values()) {
-            if (account.getIban().equals(iban)) {
+        Account account = findAccountByIban(iban);
+        if (account != null) {
+            if (account.getBalance() >= amount) {
                 account.setBalance(account.getBalance() - amount);
+                return account;
             }
         }
         return null;
@@ -113,18 +125,33 @@ public class Bank {
 
     }
 
+    public Customer findCustomer(int zipCode) {
+        for (Customer customer:customers){
+            if(customer.getZipCode()==zipCode){
+                return customer;
+            }
+        }
+        return null;
+    }
+
     public List<Account> findAccountsByZip(int zipCode) {
-        List<Account> accounts = new LinkedList<>();
+        List<Account> result = new LinkedList<>();
+        Customer customer=findCustomer(zipCode);
         for (Account account : accountsByIban.values()) {
+            if (customer.getNif().equals(account.getNif())){
+                result.add(account);
+            }
+            /*
+            Mucho texto, cree un metodo para encontrar cliente por el zip
             for (Customer customer : customers) {
                 if (account.getNif().equals(customer.getNif())) {
                     if (customer.getZipCode() == zipCode) {
                         accounts.add(account);
                     }
                 }
-            }
+            }*/
         }
-        return accounts;
+        return result;
     }
 }
 

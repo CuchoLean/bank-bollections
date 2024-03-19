@@ -15,6 +15,5 @@ public class Main {
         for (Account account:accounts){
             account.info();
         }
-
     }
 }
